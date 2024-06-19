@@ -1,38 +1,19 @@
-import logo from './logo.svg';
 import './App.css';
-import Axios from 'axios'
-import { useEffect, useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import LoginPage from './pages/auth/LoginPage';
+import HomePage from './pages/HomePage';
+import Accounts from './pages/links/Accounts';
+import Opportunities from './pages/links/Opportunities';
 function App() {
-  Axios.default.withCredentials = true;
-  const [message, setMessage] = useState("");
-  useEffect(() => {
-    const connect = async () => {
-      const response = await Axios.get('https://did-we-sync-dev-157e15cae3f9.herokuapp.com', {
-        headers: {
-          'Access-Control-Allow-Origin': '*'
-        }
-      });
-      const msg = await response.data;
-      setMessage(msg);
-    }
-    connect();
-  })
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          {message}
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Routes>
+        <Route element={<HomePage />}>
+          <Route path="/" element={<Accounts />}></Route>
+          <Route path="/opportunities" element={<Opportunities />}></Route>
+        </Route>
+        <Route path="/auth/login" element={<LoginPage />}></Route>
+      </Routes>
     </div>
   );
 }
