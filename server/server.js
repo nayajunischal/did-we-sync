@@ -139,7 +139,7 @@ async function main() {
                 name: user.Name
             }
         }
-        res.status(200).redirect('http://localhost:3000/');
+        res.status(200).redirect('https://didwesync.netlify.app/');
     });
 
     // callback
