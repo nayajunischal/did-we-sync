@@ -48,6 +48,7 @@ async function main() {
     );
 
     app.get('/user', (req, res) => {
+        console.log('Veriying user...');
         const session = req.session;
         if (!session.sfdcAuth) {
             res.status(500).send('Failed to get authorization code from server callback.');
@@ -60,6 +61,7 @@ async function main() {
 
     // read
     app.get('/fetch/sObjectDescribe', async (req, res) => {
+        console.log('Fetching object description and records...');
         const sObject = req.query.sobject;
         const meta = await conn.sobject(sObject).describe();
         let result = {};
@@ -68,7 +70,6 @@ async function main() {
         } else if (sObject === 'Opportunity') {
             result = await conn.query('SELECT Id, Name, AccountId, CloseDate, StageName, Amount FROM Opportunity ORDER BY CreatedDate DESC LIMIT 500');
         }
-
         res.send({
             meta,
             result
@@ -79,7 +80,8 @@ async function main() {
     app.delete("/delete", async (req, res) => {
         const sobject = req.query.sobject;
         const id = req.query.id;
-        const ret = await conn.sobject(sobject).delete(req.query.id);
+        console.log('Deleting record with id= ', id);
+        const ret = await conn.sobject(sobject).delete(id);
         if (ret.success) {
             res.send({
                 message: `${sobject} deleted successfully: `,
@@ -91,6 +93,7 @@ async function main() {
     app.put("/update", async (req, res) => {
         const sobject = req.query.sobject;
         const record = req.body;
+        console.log('Updating record ', record);
         const ret = await conn.sobject(sobject).update(record);
         if (ret.success) {
             res.send(ret).status(200).end();
@@ -99,6 +102,7 @@ async function main() {
 
     // create
     app.post('/create', async (req, res) => {
+        console.log('Creating new record ', req.body);
         const sobject = req.query.sobject;
         const ret = await conn.sobject(sobject).create(req.body);
         res.send(ret.id).status(200).end();
@@ -106,6 +110,7 @@ async function main() {
 
     // login
     app.get('/login', async (req, res) => {
+        console.log('Redirecting to Salesforce...');
         const authUri = oauth2.getAuthorizationUrl({ scope: 'api full' });
         res.status(200).json({ authUri: authUri });
     })
@@ -115,7 +120,7 @@ async function main() {
     */
     app.get('/auth/sfdc/callback', async (req, res) => {
         const code = req.query.code;
-
+        console.log('Authenticating with Salesforce...');
         const userInfo = await conn.authorize(code);
 
         if (!code) {
@@ -138,6 +143,7 @@ async function main() {
 
     // callback
     app.get('/logout', async (req, res) => {
+        console.log('Logging out...');
         delete req.session?.sfdcAuth;
         await conn.logout();
         return res.status(200).end();
@@ -145,6 +151,7 @@ async function main() {
 
     // Synchronize records AWS RDS
     app.post('/sync/accounts', async (req, res) => {
+        console.log('Synchronizing accounts...');
         const accounts = req.body;
         accounts.forEach(account => {
             delete account.attributes
@@ -171,6 +178,7 @@ async function main() {
     })
 
     app.post('/sync/opportunities', async (req, res) => {
+        console.log('Synchronizing opportunities...');
         const opportunities = req.body;
         opportunities.forEach(opportunity => {
             delete opportunity.attributes
