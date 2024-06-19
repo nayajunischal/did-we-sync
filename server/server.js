@@ -119,7 +119,7 @@ async function main() {
     /**
      * Login callback endpoint (only called by Salesforce)
     */
-    app.get('/auth/callback', async (req, res) => {
+    app.get('/auth/sfdc/callback', async (req, res) => {
         const code = req.query.code;
         console.log('Authenticating with Salesforce...');
         const userInfo = await conn.authorize(code);
