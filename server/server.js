@@ -26,9 +26,10 @@ export const prisma = new PrismaClient();
 
 // express declarations
 const app = express()
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 8080
 const whitelist = [
     'http://localhost:3000',
+    'https://didwesync.netlify.app',
     '*'
 ]
 const corsOptions = {
@@ -118,7 +119,7 @@ async function main() {
     /**
      * Login callback endpoint (only called by Salesforce)
     */
-    app.get('/auth/sfdc/callback', async (req, res) => {
+    app.get('/auth/callback', async (req, res) => {
         const code = req.query.code;
         console.log('Authenticating with Salesforce...');
         const userInfo = await conn.authorize(code);
